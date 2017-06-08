@@ -65,8 +65,8 @@ def main():
         latencies.append(lat_ovhd)
         logger.info("Latency overhead: %s" % lat_ovhd)
 
-    logger.info("Latency overhead: %s" % np.median([l for l in latencies if l > 0.0]))
-    logger.info("Bandwidth overhead: %s" % np.median([b for b in bandwidths if b > 0.0]))
+    #logger.info("Latency overhead: %s" % np.median([l for l in latencies if l > 0.0]))
+    #logger.info("Bandwidth overhead: %s" % np.median([b for b in bandwidths if b > 0.0]))
 
 
 def parse_arguments():
