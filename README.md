@@ -24,6 +24,8 @@ usage: main.py [-h] [-c <config name>] [--log <log path>]
 [...]
 ```
 
+ 1. Clone the repo: `git clone git@github.com:wtfpad/wtfpad.git`
+
  1. Install requirements: `pip install -r requirements.txt`
 
  1. Run a simulation with a specific configuration: `python src/main.py -c <config name> <traces path>`
