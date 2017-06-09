@@ -11,7 +11,7 @@ from time import strftime
 import adaptive as ap
 import constants as ct
 import overheads as oh
-from parser import parse, dump
+from parser import Trace, parse, dump
 
 import logging
 
@@ -51,22 +51,22 @@ def main():
         trace = parse(join(args.traces_path, fname))
 
         logger.info("Simulating trace: %s" % fname)
-        simulated = wtfpad.simulate(trace)
+        simulated = wtfpad.simulate(Trace(trace))
 
         # dump simulated trace to results directory
         dump(simulated, join(output_dir, fname))
 
         # calculate overheads
-        bw_ovhd = oh.bandwidth_ovhd(trace, simulated)
+        bw_ovhd = oh.bandwidth_ovhd(simulated, trace)
         bandwidths.append(bw_ovhd)
-        logger.info("Bandwidth overhead: %s" % bw_ovhd)
+        logger.debug("Bandwidth overhead: %s" % bw_ovhd)
 
-        lat_ovhd = oh.latency_ovhd(trace, simulated)
+        lat_ovhd = oh.latency_ovhd(simulated, trace)
         latencies.append(lat_ovhd)
-        logger.info("Latency overhead: %s" % lat_ovhd)
+        logger.debug("Latency overhead: %s" % lat_ovhd)
 
-    #logger.info("Latency overhead: %s" % np.median([l for l in latencies if l > 0.0]))
-    #logger.info("Bandwidth overhead: %s" % np.median([b for b in bandwidths if b > 0.0]))
+    logger.info("Latency overhead: %s" % np.median([l for l in latencies if l > 0.0]))
+    logger.info("Bandwidth overhead: %s" % np.median([b for b in bandwidths if b > 0.0]))
 
 
 def parse_arguments():

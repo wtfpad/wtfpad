@@ -53,7 +53,7 @@ class AdaptiveSimulator(object):
             oppflow = flows[-packet.direction]  # opposite direction
 
             # update state
-            update = self.update_state(packet, flow)
+            self.update_state(packet, flow)
 
             # run adaptive padding in the flow direction
             self.add_padding(i, trace, flow, 'snd')
@@ -62,9 +62,8 @@ class AdaptiveSimulator(object):
             # as if the packet was received at the other side
             self.add_padding(i, trace, oppflow, 'rcv')
 
-            # append packet to flow
+            # pad packet length
             packet.length = self.length_distrib.random_sample()
-            flow.append(packet)
 
         # sort race by timestamp
         trace.sort(key=lambda x: x.timestamp)
