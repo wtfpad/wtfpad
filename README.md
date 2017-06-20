@@ -9,8 +9,9 @@ Toward an Efficient Website Fingerprinting Defense
 M. Juarez, M. Imani, M. Perry, C. Diaz, M. Wright
 In the European Symposium on Research in Computer Security (ESORICS), vol. 2, pp. 27-46. Springer, 2016.
 ```
-
+<!---
  - Article page in the [publisher site](https://link.springer.com/chapter/10.1007/978-3-319-45744-4_2).
+--->
  - Download a [pre-print version](http://homes.esat.kuleuven.be/~mjuarezm/index_files/pdf/esorics16.pdf) for open access.
 
 ## Quick reference
