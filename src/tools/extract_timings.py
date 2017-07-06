@@ -18,7 +18,7 @@ Outgoing traffic, there are two bursts
       t1       t2         t3        t4
 
 
-Incoming traffic, there are two burst
+Incoming traffic, there are two bursts
                         <----------------->           <--------->
                         |                 |           |         |
 ------------------------|-----------------|-----------|---------|------------
@@ -156,10 +156,12 @@ def get_current_bw(trace, ind, num, direction):
         return -1
 
 
+
 def dump_file(name,data):
-    fi = open(name,'w')
-    pickle.dump(data,fi)
-    fi.close()
+    for key in data:
+        fi = open(os.path.join(name, key),'w')
+        pickle.dump(data[key],fi)
+        fi.close()
     return
 
 
@@ -433,7 +435,7 @@ number_of_burst_outgoing, number_of_burst_incoming = extract_times(**vars(args))
         'number_of_burst_incoming': number_of_burst_incoming
     }
 
-    dump_file(os.path.join(args.output, 'histograms.dump'),hists)
+    dump_file(args.output, hists)
 
 
 if __name__ == "__main__":
