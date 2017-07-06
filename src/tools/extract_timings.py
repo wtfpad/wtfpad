@@ -158,7 +158,7 @@ def get_current_bw(trace, ind, num, direction):
 
 def dump_file(name,data):
     for key in data:
-        with open(os.path.join(name, '%s.iat' % key), 'w'):
+        with open(os.path.join(name, '%s.iat' % key), 'w') as fi:
             fi.write('\n'.join(map(str, data[key])))
 
 
