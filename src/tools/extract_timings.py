@@ -51,7 +51,7 @@ like: (t5 - t2)
 CELL_LENGTH = 1.0
 INCOMING = -1
 OUTGOING = 1
-
+DELIMITER = '\t'
 
 class flow():
     def __init__(self):
@@ -160,7 +160,8 @@ def get_current_bw(trace, ind, num, direction):
 def dump_file(name,data):
     for key in data:
         fi = open(os.path.join(name, key),'w')
-        pickle.dump(data[key],fi)
+        output = DELIMITER.join([str(i) for i in data[key]])
+        fi.write(output)
         fi.close()
     return
 
