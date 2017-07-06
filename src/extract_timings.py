@@ -1,4 +1,6 @@
 import os
+import sys
+import argparse
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
@@ -46,13 +48,6 @@ like: (t5 - t2)
 
 '''
 
-PATH_TO_DATA = '/media/isec/My Passport/PhD-research/wfp/data/extracted_pcap/closed-world' # '/home/isec/projects/wtf-test/wtfpad-master/closed-world-checked'
-DUMP_PATH = './dump' # the path we save the figures and dump the data
-NEIGHBORS = 2 # Number of neighbor around the current packet for computing bandwidth the window size will be 2*NEIGHBORS + 1
-TIMESTAMP_COLUMN = 0 # the column of timestamps in files
-PACKET_SIZE_COLUMN = -1 # the column of packet sizes in files in "before.csv" files
-DELIMITER = '\t' # delimiters for splitting lines in files
-
 CELL_LENGTH = 1.0
 INCOMING = -1
 OUTGOING = 1
@@ -63,7 +58,7 @@ class flow():
         self.incoming = []
         self.outgoing = []
 
-def calculate_bw_threshold(path_):
+def calculate_bw_threshold(path_, timestamp_column=0, packet_size_column=1, delimiter='\t'):
     '''Here we calculate the median bw of all websites to use them as threshold
     we calculate two bandwidths, uplaod and download'''
     upload = []
@@ -81,12 +76,12 @@ def calculate_bw_threshold(path_):
             ind = -1
             for line in fi:
                 ind += 1
-                parts = line.split(DELIMITER)
-                ts = float(parts[TIMESTAMP_COLUMN])
+                parts = line.split(delimiter)
+                ts = float(parts[timestamp_column])
                 try:
-                    sz = float(parts[PACKET_SIZE_COLUMN])
+                    sz = float(parts[packet_size_column])
                 except:
-                    sz = float(parts[PACKET_SIZE_COLUMN][:-1])
+                    sz = float(parts[packet_size_column][:-1])
                 packet = (ts, sz*float(CELL_LENGTH))
                 if packet[1] > 0.0: upload_tmp.append(packet)
                 if packet[1] < 0.0: download_tmp.append(packet)
@@ -133,12 +128,12 @@ def get_tuples_of_traces(path_):
             ind = -1
             for line in fi:
                 ind += 1
-                parts = line.split(DELIMITER)
-                ts = float(parts[TIMESTAMP_COLUMN])
+                parts = line.split(delimiter)
+                ts = float(parts[timestamp_column])
                 try:
-                    sz = float(parts[PACKET_SIZE_COLUMN])
+                    sz = float(parts[packet_size_column])
                 except:
-                    sz = float(parts[PACKET_SIZE_COLUMN][:-1])
+                    sz = float(parts[packet_size_column][:-1])
                 packet_ = (ts , sz*float(CELL_LENGTH), ind)# (timestamp, cell size, ind)
                 if packet_[1] > 0.0: trace_tmp.outgoing.append(packet_)
                 if packet_[1] < 0.0: trace_tmp.incoming.append(packet_)
@@ -168,19 +163,19 @@ def dump_file(name,data):
     return
 
 
-def main():
+def extract_times(traces_path, output, neighbors, timestamp_column, packet_size_column, delimiter):
     '''
     Here we compute the probabilities and the number of bursts in traces
     '''
 
 
-    if not (os.path.exists(DUMP_PATH)):
-        os.makedirs(DUMP_PATH)
+    if not (os.path.exists(output)):
+        os.makedirs(output)
 
 
 
     print '\nComputing bandwidth thresholds ...\n'
-    outgoing_bw_thr,incoming_bw_thr,traces =  calculate_bw_threshold(PATH_TO_DATA) # returns upload and download bw reps #
+    outgoing_bw_thr,incoming_bw_thr,traces = calculate_bw_threshold(traces_path, timestamp_column, packet_size_column, delimiter)  # returns upload and download bw reps #
     #outgoing_bw_thr,incoming_bw_thr = 4632.00262586, 35235.9188
     fi_ = open('thresholds.value','w')
     print ("outgoing bw threshold: {0},incoming bw threshold: {1}".format(outgoing_bw_thr,incoming_bw_thr))
@@ -223,7 +218,7 @@ def main():
             start_burst = 0
             current_bw, prev_bw, burst_count_in_trace  = 0.0, 0.0,0
             for ind, pkt in enumerate(trace): # trace here is purely incoming or outgoing
-                current_bw = get_current_bw(trace, ind, NEIGHBORS, direction)
+                current_bw = get_current_bw(trace, ind, neighbors, direction)
                 if current_bw == -1: current_bw = prev_bw # prev_bw should be updated
 
 
@@ -335,7 +330,7 @@ def main():
     #plt.xlim(xmax = 0.5)
     #plt.xticks(bins_)
     plt.xscale('log')
-    plt.savefig(os.path.join(DUMP_PATH,'GAP_send.pdf'), format='pdf')
+    plt.savefig(os.path.join(output,'GAP_send.pdf'), format='pdf')
 
 
     plt.figure()
@@ -345,7 +340,7 @@ def main():
     plt.legend(loc='best')
     plt.xscale('log')
     plt.title("BURST send histograms")
-    plt.savefig(os.path.join(DUMP_PATH,'BURST_send.pdf'), format='pdf')
+    plt.savefig(os.path.join(output,'BURST_send.pdf'), format='pdf')
 
     plt.figure()
     bins_=np.logspace(-3.0, 2.3, 50)
@@ -354,7 +349,7 @@ def main():
     plt.legend(loc='best')
     plt.xscale('log')
     plt.title("BURST receive histograms")
-    plt.savefig(os.path.join(DUMP_PATH,'BURST_receive.pdf'), format='pdf')
+    plt.savefig(os.path.join(output,'BURST_receive.pdf'), format='pdf')
 
     plt.figure()
     bins_=np.logspace(0.0, 3.0, 150)
@@ -363,7 +358,7 @@ def main():
     plt.legend(loc='best')
     plt.title("Burst lengths")
     plt.xscale('log')
-    plt.savefig(os.path.join(DUMP_PATH,'burst_length.pdf'), format='pdf')
+    plt.savefig(os.path.join(output,'burst_length.pdf'), format='pdf')
 
     plt.figure()
     plt.hist(number_of_burst_outgoing, 50,color = 'g', alpha=0.5, label='outgoing ')
@@ -372,7 +367,7 @@ def main():
     plt.title("The number of bursts")
     plt.xlim(xmax = 200)
 
-    plt.savefig(os.path.join(DUMP_PATH,'number_of_burst.pdf'), format='pdf')
+    plt.savefig(os.path.join(output,'number_of_burst.pdf'), format='pdf')
     print "\nThe median of burst length in outgoing traffic: ",np.median(np.array(outgoing_burst_length))
     print "\nThe median of burst length in incoming traffic: ",np.median(np.array(incoming_burst_length))
     print "\nDone!....\n"
@@ -381,11 +376,49 @@ def main():
 number_of_burst_outgoing, number_of_burst_incoming
 
 
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Extract inter-arrival times to build histograms.',
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-if __name__ == "__main__":
+    parser.add_argument('traces_path',
+                        metavar='<traces path>',
+                        help='Path to the directory with the traffic traces to be simulated.')
+    parser.add_argument('--output', '-o',
+                        type=str,
+                        default='dump',
+                        metavar='<oupput>',
+                        help='Path to the directory where we save figures and dump data.')
+    parser.add_argument('--neighbors', '-n',
+                        default=2,
+                        type=int,
+                        metavar='<num neigbors>',
+                        help='Number of neighbor around the current packet for computing bandwidth the window size will be 2*NEIGHBORS + 1.')
+    parser.add_argument('--timestamp-column', '-t',
+                        default=0,
+                        type=int,
+                        metavar='<timestamp column>',
+                        help='Column index of timestamps in input traffic traces.')
+    parser.add_argument('--packet-size-column', '-p',
+                        default=1,
+                        type=int,
+                        metavar='<packet size column>',
+                        help='Column index of packet sizes in input traffic traces.')
+    parser.add_argument('--delimiter', '-d',
+                        default='\t',
+                        type=str,
+                        metavar='<field delimiter>',
+                        help='Field delimiter to split columns in input traffic traces.')
+
+    return parser.parse_args()
+
+
+def main():
+    # parse arguments
+    args = parse_arguments()
+
     client_GAP_send_histogram,client_BURST_send_histogram,client_BURST_receive_histogram, server_GAP_send_histogram,\
            server_BURST_send_histogram, server_BURST_receive_histogram, outgoing_burst_length,incoming_burst_length,\
-number_of_burst_outgoing, number_of_burst_incoming = main()
+number_of_burst_outgoing, number_of_burst_incoming = extract_times(**vars(args))
 
     hists = {
         'client_GAP_send_histogram':client_GAP_send_histogram,
@@ -400,4 +433,12 @@ number_of_burst_outgoing, number_of_burst_incoming = main()
         'number_of_burst_incoming': number_of_burst_incoming
     }
 
-    dump_file(os.path.join(DUMP_PATH,'histograms.dump'),hists)
+    dump_file(os.path.join(args.output, 'histograms.dump'),hists)
+
+
+if __name__ == "__main__":
+    try:
+        sys.exit(main())
+    except KeyboardInterrupt:
+        sys.exit(1)
+
