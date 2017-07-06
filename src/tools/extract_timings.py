@@ -51,7 +51,7 @@ like: (t5 - t2)
 CELL_LENGTH = 1.0
 INCOMING = -1
 OUTGOING = 1
-DELIMITER = '\t'
+
 
 class flow():
     def __init__(self):
@@ -156,26 +156,18 @@ def get_current_bw(trace, ind, num, direction):
         return -1
 
 
-
 def dump_file(name,data):
     for key in data:
-        fi = open(os.path.join(name, key),'w')
-        output = DELIMITER.join([str(i) for i in data[key]])
-        fi.write(output)
-        fi.close()
-    return
+        with open(os.path.join(name, '%s.iat' % key), 'w'):
+            fi.write('\n'.join(map(str, data[key])))
 
 
 def extract_times(traces_path, output, neighbors, timestamp_column, packet_size_column, delimiter):
     '''
     Here we compute the probabilities and the number of bursts in traces
     '''
-
-
     if not (os.path.exists(output)):
         os.makedirs(output)
-
-
 
     print '\nComputing bandwidth thresholds ...\n'
     outgoing_bw_thr,incoming_bw_thr,traces = calculate_bw_threshold(traces_path, timestamp_column, packet_size_column, delimiter)  # returns upload and download bw reps #
