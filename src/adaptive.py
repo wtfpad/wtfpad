@@ -26,18 +26,18 @@ ht = histo.Histogram
 class AdaptiveSimulator(object):
     """Simulates adaptive padding's original design on real web data."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, config):
         # parse arguments
-        self.interpolate = bool(kwargs.get('interpolate', True))
-        self.remove_tokens = bool(kwargs.get('remove_tokens', True))
-        self.stop_on_real = bool(kwargs.get('stop_on_real', True))
-        self.percentile = float(kwargs.get('percentile', 0))
+        self.interpolate = bool(config.get('interpolate', True))
+        self.remove_tokens = bool(config.get('remove_tokens', True))
+        self.stop_on_real = bool(config.get('stop_on_real', True))
+        self.percentile = float(config.get('percentile', 0))
 
         # the distribution of packet lengths is fixed in Tor
         self.length_distrib = histo.uniform(ct.MTU)
 
         # initialize dictionary of distributions
-        distributions = {k: v for k, v in kwargs.iteritems() if 'dist' in k}
+        distributions = {k: v for k, v in config.iteritems() if 'dist' in k}
         self.hist = self.initialize_distributions(distributions)
 
     def simulate(self, trace):
@@ -160,8 +160,9 @@ class AdaptiveSimulator(object):
     def sum_noinf_toks(self, h):
         return sum([v for k, v in h.iteritems() if k != INF])
 
-    def load_and_fit(self, histo_name, percentile=0.5, fit_distr='norm'):
-        tss = readlines(join(self.dump_path, histo_name), float)
+    def load_and_fit(self, histo_fpath, percentile=0.5, fit_distr='norm'):
+        with open(histo_fpath) as fi:
+            tss = map(float, fi.readlines())
         log_tss = [np.log(ts) for ts in tss if ts > 0]
         mu = np.mean(log_tss)
         sigma = np.std(log_tss)
@@ -182,6 +183,7 @@ class AdaptiveSimulator(object):
 
         if dist == 'histo':
             histo_fpath = params.strip()
+            logger.debug("Loading and fitting histogram from: %s" % histo_fpath)
             d = self.load_and_fit(histo_fpath, self.percentile)
 
         else:

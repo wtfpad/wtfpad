@@ -43,7 +43,7 @@ def main():
     output_dir = init_directories(args.section)
 
     # Instantiate a new adaptive padding object
-    wtfpad = ap.AdaptiveSimulator(**config)
+    wtfpad = ap.AdaptiveSimulator(config)
 
     # Run simulation on all traces
     latencies, bandwidths = [], []
