@@ -173,7 +173,7 @@ class AdaptiveSimulator(object):
             pdf_mu_prime = norm.pdf(mu_prime, mu, sigma)
             sigma_prime = 1 / (sqrt(2 * pi) * pdf_mu_prime)
         else:
-            raise ValueError("Shifting to the right makes fake bursts distinguishable from real.")
+            raise ValueError("Skewing distrib toward longer inter-arrival times makes fake bursts distinguishable from real.")
         return ht.dict_from_distr(fit_distr, (mu_prime, sigma_prime), bin_size=30)
 
     def init_distrib(self, name, config_dist, drop=0, skew=0):
@@ -184,7 +184,7 @@ class AdaptiveSimulator(object):
         if dist == 'histo':
             histo_fpath = params.strip()
             logger.debug("Loading and fitting histogram from: %s" % histo_fpath)
-            d = self.load_and_fit(histo_fpath, self.percentile)
+            d = self.load_and_fit(histo_fpath, percentile=self.percentile)
 
         else:
             inf_config, dist_params = params.split(',', 1)
