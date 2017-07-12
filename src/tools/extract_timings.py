@@ -172,7 +172,7 @@ def extract_times(traces_path, output, neighbors, timestamp_column, packet_size_
     print '\nComputing bandwidth thresholds ...\n'
     outgoing_bw_thr,incoming_bw_thr,traces = calculate_bw_threshold(traces_path, timestamp_column, packet_size_column, delimiter)  # returns upload and download bw reps #
     #outgoing_bw_thr,incoming_bw_thr = 4632.00262586, 35235.9188
-    fi_ = open('thresholds.value','w')
+    fi_ = open(os.path.join(output, 'thresholds.value'),'w')
     print ("outgoing bw threshold: {0},incoming bw threshold: {1}".format(outgoing_bw_thr,incoming_bw_thr))
     fi_.write("outgoing bw threshold: {0},incoming bw threshold: {1}".format(outgoing_bw_thr,incoming_bw_thr))
     fi_.close()
