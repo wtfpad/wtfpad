@@ -37,7 +37,7 @@ class AdaptiveSimulator(object):
         self.length_distrib = histo.uniform(ct.MTU)
 
         # initialize dictionary of distributions
-        distributions = {k: v for k, v in config.iteritems() if 'dist' in k}
+        distributions = {k: v for k, v in config.items() if 'dist' in k}
         self.hist = self.initialize_distributions(distributions)
 
     def simulate(self, trace):
@@ -158,7 +158,7 @@ class AdaptiveSimulator(object):
         return Packet(ts, flow.direction, l, dummy=True)
 
     def sum_noinf_toks(self, h):
-        return sum([v for k, v in h.iteritems() if k != INF])
+        return sum([v for k, v in h.items() if k != INF])
 
     def load_and_fit(self, histo_fpath, percentile=0.5, fit_distr='norm'):
         with open(histo_fpath) as fi:
@@ -189,7 +189,7 @@ class AdaptiveSimulator(object):
         else:
             inf_config, dist_params = params.split(',', 1)
             inf_config = float(inf_config.strip())
-            dist_params = map(float, [x.strip() for x in dist_params.split(',')])
+            dist_params = list(map(float, [x.strip() for x in dist_params.split(',')]))
             d = ht.dict_from_distr(name=dist, params=dist_params, bin_size=30)
             d = self.set_infinity_bin(d, name, inf_config)
 
@@ -207,7 +207,7 @@ class AdaptiveSimulator(object):
         on = {'snd': None, 'rcv': None}
         dirs = {IN: dict(on), OUT: dict(on)}
         hist = {BURST: dict(dirs), GAP: dict(dirs)}
-        for k, v in distributions.iteritems():
+        for k, v in distributions.items():
             endpoint, on, mode, _ = k.split('_')
             s = ct.MODE2STATE[mode]
             d = ct.EP2DIRS[endpoint]
@@ -216,7 +216,7 @@ class AdaptiveSimulator(object):
 
     def set_infinity_bin(self, distrib, name, inf_config):
         '''Setting the histograms' infinity bins.'''
-        assert len(distrib.keys()) > 1
+        assert len(list(distrib.keys())) > 1
         # GAPS
         # we want the expectation of the geometric distribution of consecutive
         # samples from histogram to be the average number of packets in a burst.

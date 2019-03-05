@@ -169,11 +169,11 @@ def extract_times(traces_path, output, neighbors, timestamp_column, packet_size_
     if not (os.path.exists(output)):
         os.makedirs(output)
 
-    print '\nComputing bandwidth thresholds ...\n'
+    print('\nComputing bandwidth thresholds ...\n')
     outgoing_bw_thr,incoming_bw_thr,traces = calculate_bw_threshold(traces_path, timestamp_column, packet_size_column, delimiter)  # returns upload and download bw reps #
     #outgoing_bw_thr,incoming_bw_thr = 4632.00262586, 35235.9188
     fi_ = open(os.path.join(output, 'thresholds.value'),'w')
-    print ("outgoing bw threshold: {0},incoming bw threshold: {1}".format(outgoing_bw_thr,incoming_bw_thr))
+    print(("outgoing bw threshold: {0},incoming bw threshold: {1}".format(outgoing_bw_thr,incoming_bw_thr)))
     fi_.write("outgoing bw threshold: {0},incoming bw threshold: {1}".format(outgoing_bw_thr,incoming_bw_thr))
     fi_.close()
 
@@ -305,17 +305,17 @@ def extract_times(traces_path, output, neighbors, timestamp_column, packet_size_
             if s_B_min != max_tmp: server_BURST_receive_histogram.append(s_B_min)
 
 
-    print "Plotting  histograms"
-    print "----------------------------------------------------------------------------------"
-    print "client_GAP_send_histogram: inter-arrival-times *within* bursts in *OUTGOING* traffic"
-    print "server_GAP_send_histogram: inter-arrival-times *within* bursts in *INCOMING* traffic"
-    print "----------------------------------------------------------------------------------"
-    print "client_BURST_send_histogram: times *between* bursts in *OUTGOING* traffic"
-    print "server_BURST_send_histogram: times *between* bursts in *INCOMING* traffic"
-    print "----------------------------------------------------------------------------------"
-    print "client_BURST_receive_histogram: times between the *beginning* of a burst from *INCOMING* traffic and the *beginning* of a burst in *OUTGOING* traffic "
-    print "server_BURST_receive_histogram: times between the *beginning* of a burst from *INCOMING* traffic and the *end* of a burst in *OUTGOING* traffic "
-    print "----------------------------------------------------------------------------------"
+    print("Plotting  histograms")
+    print("----------------------------------------------------------------------------------")
+    print("client_GAP_send_histogram: inter-arrival-times *within* bursts in *OUTGOING* traffic")
+    print("server_GAP_send_histogram: inter-arrival-times *within* bursts in *INCOMING* traffic")
+    print("----------------------------------------------------------------------------------")
+    print("client_BURST_send_histogram: times *between* bursts in *OUTGOING* traffic")
+    print("server_BURST_send_histogram: times *between* bursts in *INCOMING* traffic")
+    print("----------------------------------------------------------------------------------")
+    print("client_BURST_receive_histogram: times between the *beginning* of a burst from *INCOMING* traffic and the *beginning* of a burst in *OUTGOING* traffic ")
+    print("server_BURST_receive_histogram: times between the *beginning* of a burst from *INCOMING* traffic and the *end* of a burst in *OUTGOING* traffic ")
+    print("----------------------------------------------------------------------------------")
     bins_=np.logspace(-6.0, 1.0, 50)
     plt.hist(client_GAP_send_histogram, bins=bins_, color = 'g',alpha=0.5, label='GAP-send client ')
     plt.hist(server_GAP_send_histogram, bins=bins_, color = 'r',alpha=0.1, label='GAP-send server')
@@ -363,9 +363,9 @@ def extract_times(traces_path, output, neighbors, timestamp_column, packet_size_
     plt.xlim(xmax = 200)
 
     plt.savefig(os.path.join(output,'number_of_burst.pdf'), format='pdf')
-    print "\nThe median of burst length in outgoing traffic: ",np.median(np.array(outgoing_burst_length))
-    print "\nThe median of burst length in incoming traffic: ",np.median(np.array(incoming_burst_length))
-    print "\nDone!....\n"
+    print(("\nThe median of burst length in outgoing traffic: ",np.median(np.array(outgoing_burst_length))))
+    print(("\nThe median of burst length in incoming traffic: ",np.median(np.array(incoming_burst_length))))
+    print("\nDone!....\n")
     return client_GAP_send_histogram,client_BURST_send_histogram,client_BURST_receive_histogram, server_GAP_send_histogram,\
            server_BURST_send_histogram, server_BURST_receive_histogram, outgoing_burst_length,incoming_burst_length,\
 number_of_burst_outgoing, number_of_burst_incoming

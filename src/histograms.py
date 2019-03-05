@@ -123,14 +123,14 @@ class Histogram:
                 self.refill_histogram()
 
     def mean(self):
-        return sum([k * v for k, v in self.hist.iteritems() if k != INF]) / sum(self.hist.values())
+        return sum([k * v for k, v in self.hist.items() if k != INF]) / sum(self.hist.values())
 
     def variance(self):
         m = self.mean()
         n = sum(self.hist.values())
         if n < 2:
             raise ValueError("The sample is not big enough for an unbiased variance.")
-        return sum([k * ((v - m) ** 2) for k, v in self.hist.iteritems() if k != INF]) / (n - 1)
+        return sum([k * ((v - m) ** 2) for k, v in self.hist.items() if k != INF]) / (n - 1)
 
     def dump_histogram(self):
         """Print the values for the histogram."""
@@ -143,7 +143,7 @@ class Histogram:
             for labeli, labeli1 in zip(self.labels[0:-1], self.labels[1:]):
                 logger.debug("[%s, %s), %s", labeli, labeli1, self.hist[labeli1])
         else:
-            for label, count in self.hist.iteritems():
+            for label, count in self.hist.items():
                 logger.debug("(%s, %s)", label, count)
 
     def refill_histogram(self):
@@ -176,16 +176,16 @@ class Histogram:
 
     @classmethod
     def is_empty(self, d):
-        return len(d.keys()) == 1 and INF in d.keys()
+        return len(list(d.keys())) == 1 and INF in d.keys()
 
     @classmethod
     def divide_histogram(self, histogram, divide_by=None):
         if divide_by == None:
             return histogram, histogram
         if divide_by == 'mode':
-            divide_by = max(histogram.iteritems(), key=operator.itemgetter(1))[0]
-        high_bins = {k: v for k, v in histogram.iteritems()  if k >= divide_by}
-        low_bins = {k: v for k, v in histogram.iteritems() if k <= divide_by}
+            divide_by = max(iter(histogram.items()), key=operator.itemgetter(1))[0]
+        high_bins = {k: v for k, v in histogram.items()  if k >= divide_by}
+        low_bins = {k: v for k, v in histogram.items() if k <= divide_by}
         low_bins.update({ct.INF: 0})
         high_bins.update({divide_by: 0})
         return low_bins, high_bins
@@ -210,7 +210,7 @@ class Histogram:
         """Shift histo nbins to left/right."""
         if nbins == 0:
             return d
-        for _ in xrange(nbins):
+        for _ in range(nbins):
             d = Histogram.skew_histo_one_bin(d, side)
         return d
 
@@ -218,7 +218,7 @@ class Histogram:
     def get_dict_histo_from_list(self, l):
         import numpy as np
         counts, bins = np.histogram(l, bins=self.create_exponential_bins(a=0, b=10, n=20))
-        d = dict(zip(list(bins) + [INF], [0] + list(counts) + [0]))
+        d = dict(list(zip(list(bins) + [INF], [0] + list(counts) + [0])))
         d[0] = 0  # remove 0 iner-arrival times
         return d
 
@@ -227,7 +227,7 @@ class Histogram:
         import numpy as np
         counts, bins = np.histogram([math.ceil(v) for v in random.sample(l, num_samples)],
                                     bins=self.create_exponential_bins(a=0, b=10, n=20))
-        d = dict(zip(list(bins) + [INF], [0] + list(counts) + [0]))
+        d = dict(list(zip(list(bins) + [INF], [0] + list(counts) + [0])))
         d[0] = 0  # remove 0 iner-arrival times
         return d
 
@@ -277,7 +277,7 @@ class Histogram:
         else:
             raise ValueError("Unknown probability distribution.")
 
-        d = dict(zip(list(bins) + [INF], [0] + list(counts) + [0]))
+        d = dict(list(zip(list(bins) + [INF], [0] + list(counts) + [0])))
         d[0] = 0  # remove 0 iner-arrival times
         return d
 
@@ -295,7 +295,7 @@ class Histogram:
             if not min_bin:
                 n = 20  # TODO: what is the best number of bins?
             n = int(b - a / min_bin)
-        return ([b] + [(b - a) / 2.0 ** k for k in xrange(1, n)] + [a])[::-1]
+        return ([b] + [(b - a) / 2.0 ** k for k in range(1, n)] + [a])[::-1]
 
     @classmethod
     def drop_first_n_bins(self, h, n):
