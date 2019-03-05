@@ -43,8 +43,8 @@ def main():
         bandwidths.append(bandwidth)
         latencies.append(latency)
 
-    print "Bandwidth overhead:", np.median([b for b in bandwidths if b > 0.0])
-    print "Latency overhead:", np.median([l for l in latencies if l > 0.0])
+    print(("Bandwidth overhead:", np.median([b for b in bandwidths if b > 0.0])))
+    print(("Latency overhead:", np.median([l for l in latencies if l > 0.0])))
 
 
 if __name__ == "__main__":

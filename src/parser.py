@@ -74,7 +74,7 @@ class Trace(list):
                 return i + j + 1
         raise IndexError("No packets in this direction.")
 
-    def next(self):
+    def __next__(self):
         try:
             i = self[self._index]
         except IndexError:

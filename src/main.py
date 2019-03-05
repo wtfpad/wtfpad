@@ -1,6 +1,6 @@
 import sys
 import argparse
-import ConfigParser
+import configparser
 import numpy as np
 
 from os import mkdir, listdir
@@ -71,7 +71,7 @@ def main():
 
 def parse_arguments():
     # Read configuration file
-    conf_parser = ConfigParser.RawConfigParser()
+    conf_parser = configparser.RawConfigParser()
     conf_parser.read(ct.CONFIG_FILE)
 
     parser = argparse.ArgumentParser(description='It simulates adaptive padding on a set of web traffic traces.')
@@ -98,20 +98,20 @@ def parse_arguments():
                         type=str,
                         dest="loglevel",
                         metavar='<log level>',
-                        choices=[l for l in logging._levelNames if type(l) is str],
+                        choices=('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'),
                         default=logging.getLevelName(logging.INFO),
                         help='logging verbosity level.')
 
     # Parse arguments
     args = parser.parse_args()
 
-	# Get section in config file
+        # Get section in config file
     config = conf_parser._sections[args.section]
 
     # Use default values if not specified
     config = dict(config, **conf_parser._sections['default'])
 
-	# logging config
+        # logging config
     config_logger(args)
 
     return args, config
@@ -121,15 +121,15 @@ def config_logger(args):
     # Set file
     log_file = sys.stdout
     if args.log != 'stdout':
-		log_file = open(args.log, 'w')
+        log_file = open(args.log, 'w')
     ch = logging.StreamHandler(log_file)
 
-	# Set logging format
+        # Set logging format
     ch.setFormatter(logging.Formatter(ct.LOG_FORMAT))
     logger.addHandler(ch)
 
-	# Set level format
-    logger.setLevel(logging._levelNames[args.loglevel])
+        # Set level format
+    logger.setLevel(args.loglevel)
 
 
 if __name__ == "__main__":
