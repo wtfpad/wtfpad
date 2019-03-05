@@ -105,13 +105,13 @@ def parse_arguments():
     # Parse arguments
     args = parser.parse_args()
 
-	# Get section in config file
+        # Get section in config file
     config = conf_parser._sections[args.section]
 
     # Use default values if not specified
     config = dict(config, **conf_parser._sections['default'])
 
-	# logging config
+        # logging config
     config_logger(args)
 
     return args, config
@@ -121,14 +121,14 @@ def config_logger(args):
     # Set file
     log_file = sys.stdout
     if args.log != 'stdout':
-		log_file = open(args.log, 'w')
+        log_file = open(args.log, 'w')
     ch = logging.StreamHandler(log_file)
 
-	# Set logging format
+        # Set logging format
     ch.setFormatter(logging.Formatter(ct.LOG_FORMAT))
     logger.addHandler(ch)
 
-	# Set level format
+        # Set level format
     logger.setLevel(logging._levelNames[args.loglevel])
 
 
