@@ -85,7 +85,7 @@ def extract(times, sizes, features):
         else:
             features.append(count)
             count = 0
-    for i in range(len(sizes)/30, 100):
+    for i in range(len(sizes)//30, 100):
         features.append(0)
 
     #Bursts
